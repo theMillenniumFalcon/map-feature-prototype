@@ -1,21 +1,22 @@
 const express = require('express');
-const mongoose = require('mongoose')
-const dotenv = require('dotenv');
 const app = express();
-const pinRoute = require('./routes/pins')
+const port = process.env.PORT || 5000
+const connectDB = require('./db/connect')
+require('dotenv').config()
 
-dotenv.config()
-
-app.use(express.json)
-
-mongoose.connect(process.env.MONGO_URL, 
-    { useNewUrlParser: true, unUnifiedTopology: true }, 
-    () => {
-    console.log("Connected to MongoDB")
+app.get('/', (req, res) => {
+    res.send('Hello, world!');
 })
 
-app.use("/api/pins", pinRoute);
+const start = async () => {
+    try {
+        await connectDB(process.env.MONGO_URL)
+        app.listen(port, () => {
+            console.log(`Connected to DB and listening on port ${port}...`)
+        })
+    } catch (err) {
+        console.error(err)
+    }
+}
 
-app.listen(5000, () => {
-    console.log('listening on port 5000...');
-})
+start()
