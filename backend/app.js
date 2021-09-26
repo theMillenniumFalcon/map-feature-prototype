@@ -4,6 +4,7 @@ const port = process.env.PORT || 5000
 const connectDB = require('./db/connect')
 const pins = require('./routes/pins')
 require('dotenv').config()
+app.use(express.json())
 
 app.use('/pins', pins)
 
