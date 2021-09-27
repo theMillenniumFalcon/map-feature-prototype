@@ -2,13 +2,13 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000
 const connectDB = require('./db/connect')
-const pins = require('./routes/pins')
-const users = require('./routes/users')
+const pinsRoute = require('./routes/pins')
+const usersRoute = require('./routes/users')
 require('dotenv').config()
 app.use(express.json())
 
-app.use('/api/pins', pins)
-app.use('/api/users', users)
+app.use('/api/pins', pinsRoute)
+app.use('/api/users', usersRoute)
 
 const start = async () => {
     try {

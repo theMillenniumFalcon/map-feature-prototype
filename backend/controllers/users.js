@@ -21,7 +21,22 @@ const register = asyncWrapper(async (req, res) => {
 })
 
 // login
+const login = asyncWrapper(async (req, res) => {
+    // find user
+    const user = await User.findOne({username: req.body.username})
+    !user && res.status(400).json("Wrong username or password!")
+
+    // validate password
+    const validPassword = await bcrypt.compare(
+        req.body.password,
+        user.password
+    )
+    !validPassword && res.status(400).json("Wrong username or password!")
+
+    // send response
+    res.status(200).json({_id: user._id, username: username})
+})
 
 module.exports = {
-    register
+    register, login
 }
