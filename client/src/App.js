@@ -8,7 +8,8 @@ import Register from './components/register/Register'
 import Login from './components/login/Login'
 
 function App() {
-const [currentUser, setCurrentUser] = useState(null)
+  const myStorage = window.localStorage;
+  const [currentUser, setCurrentUser] = useState(myStorage.getItem("user"))
   const [pins, setPins] = useState([])
   const [currentPlaceId, setCurrentPlaceId] = useState(null)
   const [newPlace, setNewPlace] = useState(null)
@@ -68,6 +69,11 @@ const [currentUser, setCurrentUser] = useState(null)
     }catch(error) {
       console.log(error)
     }
+  }
+
+  const handleLogout = () => {
+    myStorage.removeItem("user")
+    setCurrentUser(null)
   }
 
   return (
@@ -140,18 +146,30 @@ const [currentUser, setCurrentUser] = useState(null)
     </Popup>
     )}
     {currentUser ? (
-      <LogoutButton>Logout</LogoutButton>
+      <LogoutButton onClick={handleLogout}>
+        Logout
+      </LogoutButton>
     ) : (
       <Buttons>
-        <LoginButton onClick={() => setShowLogin(true)}>Login</LoginButton>
-        <RegisterButton onClick={() => setShowRegister(true)}>Register</RegisterButton>
+        <LoginButton onClick={() => setShowLogin(true)}>
+          Login
+        </LoginButton>
+        <RegisterButton onClick={() => setShowRegister(true)}>
+          Register
+        </RegisterButton>
       </Buttons>
     )}
     {showRegister && (
-      <Register setShowRegister={setShowRegister}/>
+      <Register 
+        setShowRegister={setShowRegister}
+      />
     )}
     {showLogin && (
-      <Login setShowLogin={setShowLogin}/>
+      <Login 
+        setShowLogin={setShowLogin} 
+        myStorage={myStorage} 
+        setCurrentUser={setCurrentUser}
+      />
     )}
     </ReactMapGL>
     </div>
