@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import ReactMapGL, {Marker, Popup} from 'react-map-gl';
+import ReactMapGL, {Marker, Popup} from 'react-map-gl'
 import { Room, Star } from "@material-ui/icons"
 import styled from "styled-components"
 import axios from 'axios'
 import {format} from "timeago.js"
-import Register from './components/register/Register';
+import Register from './components/register/Register'
+import Login from './components/login/Login'
 
 function App() {
 const [currentUser, setCurrentUser] = useState(null)
@@ -14,6 +15,8 @@ const [currentUser, setCurrentUser] = useState(null)
   const [title, setTitle] = useState(null)
   const [desc, setDesc] = useState(null)
   const [rating, setRating] = useState(0)
+  const [showRegister, setShowRegister] = useState(false)
+  const [showLogin, setShowLogin] = useState(false)
   const [viewport, setViewport] = useState({
     width: "100vw",
     height: "100vh",
@@ -132,7 +135,7 @@ const [currentUser, setCurrentUser] = useState(null)
             <option value="5">5</option>
           </select>
           <label>Rating</label>
-          <button className="submitButton" type="submit">Add Pin</button>  
+          <button className="submitButton" type="submit">Add Pin</button>
       </Form>         
     </Popup>
     )}
@@ -140,11 +143,16 @@ const [currentUser, setCurrentUser] = useState(null)
       <LogoutButton>Logout</LogoutButton>
     ) : (
       <Buttons>
-        <LoginButton>Login</LoginButton>
-        <RegisterButton>Register</RegisterButton>
+        <LoginButton onClick={() => setShowLogin(true)}>Login</LoginButton>
+        <RegisterButton onClick={() => setShowRegister(true)}>Register</RegisterButton>
       </Buttons>
     )}
-    <Register />
+    {showRegister && (
+      <Register setShowRegister={setShowRegister}/>
+    )}
+    {showLogin && (
+      <Login setShowLogin={setShowLogin}/>
+    )}
     </ReactMapGL>
     </div>
   );
@@ -230,6 +238,8 @@ padding: 5px;
 border-radius: 5px;
 color: white;
 background-color: teal;
+margin-right: 10px;
+CURSOR: pointer;
 `;
 
 const RegisterButton  = styled.button`
@@ -238,6 +248,7 @@ padding: 5px;
 border-radius: 5px;
 color: white;
 background-color: slateblue;
+CURSOR: pointer;
 `;
 
 export default App;
