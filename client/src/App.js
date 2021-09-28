@@ -6,9 +6,13 @@ import axios from 'axios'
 import {format} from "timeago.js"
 
 function App() {
+const [currentUser, setCurrentUser] = useState(null)
   const [pins, setPins] = useState([])
   const [currentPlaceId, setCurrentPlaceId] = useState(null)
   const [newPlace, setNewPlace] = useState(null)
+  const [title, setTitle] = useState(null)
+  const [desc, setDesc] = useState(null)
+  const [rating, setRating] = useState(0)
   const [viewport, setViewport] = useState({
     width: "100vw",
     height: "100vh",
@@ -43,6 +47,25 @@ function App() {
     })
   }
 
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const newPin = {
+      username: currentUser,
+      title: title,
+      desc: desc,
+      rating: rating,
+      latitude: newPlace.latitude,
+      longitude: newPlace.longitude,
+    }
+    try {
+      const res = await axios.post("https://localhost:5000/api/pins", newPin)
+      setPins([...pins, res.data])
+      setNewPlace(null)
+    }catch(error) {
+      console.log(error)
+    }
+  }
+
   return (
     <div className="App">
        <ReactMapGL
@@ -55,7 +78,7 @@ function App() {
     >
       {pins.map((pin) => (
         <>
-        <Marker latitude={pin.latitude} longitude={pin.longitude} offsetLeft={-20} offsetTop={-10}>
+        <Marker latitude={pin.latitude} longitude={pin.longitude} offsetLeft={-viewport.zoom * 3.5} offsetTop={-viewport.zoom * 7}>
         <Room style={{ fontSize: viewport.zoom * 7, color: "slateblue", cursor: "pointer" }} 
           onClick={() => handleMarkerClick(pin._id, pin.latitude, pin.longitude)} />
        </Marker>
@@ -75,12 +98,7 @@ function App() {
               <Description>{pin.desc}</Description>
             <Label>Rating</Label>
             <Stars>
-            <Star/>
-              <Star />
-              <Star />
-              <Star />
-              <Star />
-              <Star />
+              {Array(pin.rating).fill(<Star/>)}
             </Stars>
             <Label>Information</Label>
             <Username>Created by <b>{pin.username}</b></Username>
@@ -100,12 +118,12 @@ function App() {
     anchor="left"
     onClose={() => setNewPlace(null)}
     >
-      <Form>
+      <Form onSubmit={handleSubmit} >
           <label>Title</label>
-          <input placeholder="Enter a title"/>
+          <input placeholder="Enter a title" onChange={(e) => setTitle(e.target.value)}/>
           <label>Review</label>
-          <textarea placeholder="Tell us something about this place"/>
-          <select>
+          <textarea placeholder="Tell us something about this place" onChange={(e) => setDesc(e.target.value)}/>
+          <select onChange={(e) => setRating(e.target.value)}>
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -116,7 +134,15 @@ function App() {
           <button className="submitButton" type="submit">Add Pin</button>  
       </Form>         
     </Popup>
-  )}
+    )}
+    {currentUser ? (
+      <LogoutButton>Logout</LogoutButton>
+    ) : (
+      <Buttons>
+        <LoginButton>Login</LoginButton>
+        <RegisterButton>Register</RegisterButton>
+      </Buttons>
+    )}
     </ReactMapGL>
     </div>
   );
@@ -176,6 +202,40 @@ button {
   background-color: tomato;
   cursor: pointer;
 }
+`;
+
+const LogoutButton  = styled.button`
+border: none;
+padding: 5px;
+border-radius: 5px;
+color: white;
+position: absolute;
+top: 10px;
+right: 10px;
+background-color: tomato;
+cursor: pointer;
+`;
+
+const Buttons = styled.div`
+position: absolute;
+top: 10px;
+right: 10px;
+`;
+
+const LoginButton  = styled.button`
+border: none;
+padding: 5px;
+border-radius: 5px;
+color: white;
+background-color: teal;
+`;
+
+const RegisterButton  = styled.button`
+border: none;
+padding: 5px;
+border-radius: 5px;
+color: white;
+background-color: slateblue;
 `;
 
 export default App;
